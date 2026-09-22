@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Lille Plans</string>
+    <string name="title_activity_main">Lille Plans</string>
+    <string name="package_name">fr.nzati.lilleplans</string>
+    <string name="custom_url_scheme">fr.nzati.lilleplans</string>
+</resources>

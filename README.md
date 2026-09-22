@@ -19,10 +19,10 @@ Cinq cartes sont disponibles :
 
 ## Utilisation
 
-Aucune dépendance à installer ni build : ouvrir `index.html` dans un navigateur (les librairies Leaflet sont chargées depuis un CDN), ou lancer un petit serveur local :
+Le code web se trouve dans `www/`. Aucune dépendance à installer ni build pour le tester dans un navigateur : ouvrir `www/index.html`, ou lancer un petit serveur local :
 
 ```bash
-npx serve .
+npx serve www
 ```
 
 Sur l'écran d'accueil, chaque carte ouvre le plan correspondant :
@@ -38,6 +38,22 @@ Le bouton ⚙ en bas à droite bascule entre thème clair et sombre.
 - Accès aéroport : ligne de bus 68 (Aéroport Lille-Lesquin ↔ Quatre Cantons - Stade Pierre-Mauroy), identifiée dans le même GTFS, combinée schématiquement avec la ligne 1 du métro
 
 Réseau exploité par Ilévia (Métropole Européenne de Lille).
+
+## Appli Android
+
+Le projet est empaqueté en appli Android via [Capacitor](https://capacitorjs.com) (dossier `android/`), qui embarque le même code que `www/` sans rien changer à l'appli web.
+
+- **Compilation automatique** : chaque push sur `main` déclenche `.github/workflows/android-build.yml` (GitHub Actions), qui génère un APK de debug téléchargeable dans l'onglet *Actions* du dépôt (artefact `lille-plans-debug-apk`) — aucune installation locale d'Android Studio nécessaire pour tester.
+- **Compilation locale** (si Android Studio est installé) :
+  ```bash
+  npx cap sync android
+  cd android && ./gradlew assembleDebug
+  ```
+- **Icône / écran de démarrage** : sources dans `resources/` (`icon.png`, `splash.png`), régénérés pour Android via :
+  ```bash
+  npx capacitor-assets generate --android
+  ```
+- **Publication sur le Play Store** : nécessite un compte développeur Google Play (25$, une fois) et un APK/AAB **signé** (contrairement à l'APK de debug généré par la CI). À faire une fois le compte créé.
 
 ## Avertissement
 
