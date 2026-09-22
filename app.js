@@ -227,6 +227,43 @@ const NETWORKS = {
     dataUrl: "data/bus-routes.json",
     legendNote: "Réseau Ilévia — données GTFS ouvertes, 154 lignes de bus",
   },
+  nightbus: {
+    key: "nightbus",
+    type: "geo",
+    title: "Plan du bus de nuit",
+    subtitle: "Ligne N1 — Lille ↔ Villeneuve-d'Ascq",
+    appTitle: "Bus de nuit de Lille",
+    filenameBase: "plan-bus-nuit-lille",
+    dataUrl: "data/bus-routes.json",
+    lineIds: ["N1"],
+    legendNote: "Réseau Ilévia — Ligne de nuit N1 : Lille Porte de Douai ↔ Villeneuve-d'Ascq 4 Cantons",
+  },
+  airport: {
+    key: "airport",
+    title: "Accès aéroport",
+    subtitle: "Lesquin ↔ centre-ville — Bus 68 + Métro",
+    appTitle: "Accès à l'aéroport de Lille-Lesquin",
+    filenameBase: "plan-acces-aeroport-lille",
+    stations: {
+      "aeroport":  { name: "Aéroport Lille-Lesquin", x: 0, y: 0 },
+      "qc-bus":    { name: "Quatre Cantons - Stade Pierre-Mauroy", x: 2, y: 0 },
+      "flandres-bus": { name: "Gare Lille-Flandres", x: 4, y: 0, rail: true },
+    },
+    lines: {
+      68: { order: ["aeroport", "qc-bus"], color: "#52AE32" },
+      1: { order: ["qc-bus", "flandres-bus"], color: "#E4032E" },
+    },
+    interchange: new Set(["qc-bus"]),
+    suppressTerminusBadge: new Set(["qc-bus"]),
+    unit: 110,
+    pad: 240,
+    thumbFocus: "qc-bus",
+    legendNote: "Trajet type : Aéroport de Lille-Lesquin → Bus 68 → Quatre Cantons - Stade Pierre-Mauroy → Métro Ligne 1 → Gare Lille-Flandres (centre-ville)",
+    legendPictos: [
+      { kind: "interchange", label: "Correspondance bus / métro" },
+      { kind: "rail", label: "Gare SNCF / TER / TGV" },
+    ],
+  },
 };
 
 /* ------------------------------------------------------------------
@@ -336,9 +373,11 @@ function buildNetworkSvg(network) {
 
   // --- médaillons de terminus ---
   const termini = new Set();
+  const suppressBadge = network.suppressTerminusBadge || new Set();
   for (const key of lineKeys) {
     const order = network.lines[key].order;
     for (const endId of [order[0], order[order.length - 1]]) {
+      if (suppressBadge.has(endId)) continue;
       termini.add(endId);
       const p = proj(stations[endId]);
       const badge = svgEl("g", {});
@@ -554,9 +593,16 @@ function geoBoundsOf(routes) {
   return { minLat, maxLat, minLon, maxLon };
 }
 
+function getNetworkBusRoutes(network) {
+  if (!busData) return [];
+  if (network.lineIds) return busData.filter((r) => network.lineIds.includes(r.id));
+  return busData;
+}
+
 function buildBusThumbSvg(network) {
-  const routes = busData || [];
+  const routes = getNetworkBusRoutes(network);
   const w = 640, h = 420, pad = 16;
+  const strokeW = routes.length <= 3 ? 3.5 : 1.1;
   const svg = svgEl("svg", { xmlns: SVG_NS, viewBox: `0 0 ${w} ${h}`, preserveAspectRatio: "xMidYMid meet" });
   svg.style.width = "100%"; svg.style.height = "100%"; svg.style.display = "block";
   svg.appendChild(svgEl("rect", { x: 0, y: 0, width: w, height: h, fill: "#e9ebe4" }));
@@ -580,8 +626,8 @@ function buildBusThumbSvg(network) {
     for (const v of r.variants) {
       const pts = v.coords.map(([lat, lon]) => { const p = proj(lat, lon); return `${p.x.toFixed(1)},${p.y.toFixed(1)}`; }).join(" ");
       g.appendChild(svgEl("polyline", {
-        points: pts, fill: "none", stroke: r.color, "stroke-width": 1.1,
-        "stroke-opacity": 0.75, "stroke-linecap": "round", "stroke-linejoin": "round",
+        points: pts, fill: "none", stroke: r.color, "stroke-width": strokeW,
+        "stroke-opacity": 0.8, "stroke-linecap": "round", "stroke-linejoin": "round",
       }));
     }
   }
@@ -828,7 +874,7 @@ function renderDetail(key) {
   document.getElementById("geo-view").classList.toggle("hidden", !isGeo);
 
   if (isGeo) {
-    loadBusData().then((routes) => renderBusMap(network, routes));
+    loadBusData().then(() => renderBusMap(network, getNetworkBusRoutes(network)));
     return;
   }
 
@@ -892,7 +938,7 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("settings-fab").addEventListener("click", toggleTheme);
   document.getElementById("btn-png").addEventListener("click", () => downloadPng(currentSvg, currentNetwork.filenameBase));
   document.getElementById("btn-svg").addEventListener("click", () => downloadSvg(currentSvg, currentNetwork.filenameBase));
-  document.getElementById("btn-geojson").addEventListener("click", () => downloadGeoJson(busData || [], currentNetwork.filenameBase));
+  document.getElementById("btn-geojson").addEventListener("click", () => downloadGeoJson(getNetworkBusRoutes(currentNetwork), currentNetwork.filenameBase));
   document.getElementById("btn-toggle-panel").addEventListener("click", () => {
     document.getElementById("line-panel").classList.toggle("hidden");
     setTimeout(() => leafletMap && leafletMap.invalidateSize(), 60);
