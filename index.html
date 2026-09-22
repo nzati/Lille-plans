@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Plan du métro de Lille</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-title">
+      <span class="logo-m">M</span>
+      <h1>Métro de Lille</h1>
+    </div>
+    <div class="topbar-actions">
+      <button id="btn-png" class="btn btn-primary">Télécharger en PNG</button>
+      <button id="btn-svg" class="btn btn-secondary">Télécharger en SVG</button>
+    </div>
+  </header>
+
+  <main class="map-wrap">
+    <div id="map-container" class="map-container">
+      <!-- SVG map injected here by app.js -->
+    </div>
+  </main>
+
+  <footer class="foot-note">
+    Plan schématique non contractuel, réalisé à partir des données du réseau Ilévia (2 lignes, 60 stations). Inspiré du style visuel du plan du métro parisien.
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
