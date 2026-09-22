@@ -217,6 +217,16 @@ const NETWORKS = {
       { kind: "metro", label: "Correspondance métro" },
     ],
   },
+  bus: {
+    key: "bus",
+    type: "geo",
+    title: "Plan des bus",
+    subtitle: "154 lignes — tracés réels (GTFS)",
+    appTitle: "Bus de Lille",
+    filenameBase: "plan-bus-lille",
+    dataUrl: "data/bus-routes.json",
+    legendNote: "Réseau Ilévia — données GTFS ouvertes, 154 lignes de bus",
+  },
 };
 
 /* ------------------------------------------------------------------
@@ -492,6 +502,218 @@ function buildThumbSvg(network) {
 }
 
 /* ------------------------------------------------------------------
+   Réseau géographique — Bus (données GTFS Ilévia, tracés réels)
+------------------------------------------------------------------- */
+
+let busData = null;
+let busDataPromise = null;
+
+function loadBusData() {
+  if (busDataPromise) return busDataPromise;
+  busDataPromise = fetch(NETWORKS.bus.dataUrl)
+    .then((r) => r.json())
+    .then((data) => { busData = data; return data; });
+  return busDataPromise;
+}
+
+const BUS_GROUP_ORDER = [
+  "Lianes", "Citadines", "Corolle", "Express", "Lignes urbaines",
+  "Périurbaines", "Flexo / à la demande", "Scolaires", "Noctambus", "Autres",
+];
+
+function classifyBusRoute(name) {
+  if (/^L\d+$/.test(name)) return "Lianes";
+  if (/^CO\d*$/.test(name)) return "Corolle";
+  if (/^C\d+$/.test(name)) return "Citadines";
+  if (/^E\d+F?$/.test(name)) return "Express";
+  if (/^S\d+$/.test(name)) return "Scolaires";
+  if (/F$/.test(name) || /^F\d+$/.test(name)) return "Flexo / à la demande";
+  if (/^A\d+$/.test(name)) return "Lignes urbaines";
+  if (/^P\d+$/.test(name)) return "Périurbaines";
+  if (/^N\d+$/.test(name)) return "Noctambus";
+  if (/^\d+$/.test(name)) return "Lignes urbaines";
+  return "Autres";
+}
+
+function escapeHtml(str) {
+  return String(str || "").replace(/[&<>"']/g, (c) => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
+  }[c]));
+}
+
+function geoBoundsOf(routes) {
+  let minLat = Infinity, maxLat = -Infinity, minLon = Infinity, maxLon = -Infinity;
+  for (const r of routes) {
+    for (const v of r.variants) {
+      for (const [lat, lon] of v.coords) {
+        minLat = Math.min(minLat, lat); maxLat = Math.max(maxLat, lat);
+        minLon = Math.min(minLon, lon); maxLon = Math.max(maxLon, lon);
+      }
+    }
+  }
+  return { minLat, maxLat, minLon, maxLon };
+}
+
+function buildBusThumbSvg(network) {
+  const routes = busData || [];
+  const w = 640, h = 420, pad = 16;
+  const svg = svgEl("svg", { xmlns: SVG_NS, viewBox: `0 0 ${w} ${h}`, preserveAspectRatio: "xMidYMid meet" });
+  svg.style.width = "100%"; svg.style.height = "100%"; svg.style.display = "block";
+  svg.appendChild(svgEl("rect", { x: 0, y: 0, width: w, height: h, fill: "#e9ebe4" }));
+  if (!routes.length) return svg;
+
+  const b = geoBoundsOf(routes);
+  const latAvg = (b.minLat + b.maxLat) / 2;
+  const cos = Math.cos((latAvg * Math.PI) / 180);
+  const spanX = (b.maxLon - b.minLon) * cos || 1;
+  const spanY = b.maxLat - b.minLat || 1;
+  const scale = Math.min((w - 2 * pad) / spanX, (h - 2 * pad) / spanY);
+  const offX = (w - spanX * scale) / 2;
+  const offY = (h - spanY * scale) / 2;
+  const proj = (lat, lon) => ({
+    x: offX + (lon - b.minLon) * cos * scale,
+    y: h - (offY + (lat - b.minLat) * scale),
+  });
+
+  const g = svgEl("g", {});
+  for (const r of routes) {
+    for (const v of r.variants) {
+      const pts = v.coords.map(([lat, lon]) => { const p = proj(lat, lon); return `${p.x.toFixed(1)},${p.y.toFixed(1)}`; }).join(" ");
+      g.appendChild(svgEl("polyline", {
+        points: pts, fill: "none", stroke: r.color, "stroke-width": 1.1,
+        "stroke-opacity": 0.75, "stroke-linecap": "round", "stroke-linejoin": "round",
+      }));
+    }
+  }
+  svg.appendChild(g);
+  return svg;
+}
+
+let leafletMap = null;
+const busLineLayers = new Map(); // route.id -> [L.Polyline, ...]
+
+function ensureLeafletMap() {
+  if (leafletMap) return leafletMap;
+  leafletMap = L.map("leaflet-map", { zoomControl: true }).setView([50.6292, 3.0573], 12);
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    maxZoom: 19,
+  }).addTo(leafletMap);
+  return leafletMap;
+}
+
+function renderBusMap(network, routes) {
+  const map = ensureLeafletMap();
+  for (const layers of busLineLayers.values()) layers.forEach((l) => map.removeLayer(l));
+  busLineLayers.clear();
+
+  const allLatLngs = [];
+  for (const route of routes) {
+    const layers = [];
+    for (const variant of route.variants) {
+      const poly = L.polyline(variant.coords, { color: route.color, weight: 3, opacity: 0.8 });
+      poly.bindPopup(
+        `<strong>${escapeHtml(route.name)}</strong><br>` +
+        `${escapeHtml(variant.firstStop)} → ${escapeHtml(variant.lastStop)}`
+      );
+      poly.addTo(map);
+      layers.push(poly);
+      allLatLngs.push(...variant.coords);
+    }
+    busLineLayers.set(route.id, layers);
+  }
+  if (allLatLngs.length) map.fitBounds(allLatLngs, { padding: [20, 20] });
+
+  buildLinePanel(routes);
+  setTimeout(() => map.invalidateSize(), 60);
+}
+
+function buildLinePanel(routes) {
+  const container = document.getElementById("line-panel-groups");
+  container.innerHTML = "";
+  const groups = new Map();
+  for (const r of routes) {
+    const g = classifyBusRoute(r.name);
+    if (!groups.has(g)) groups.set(g, []);
+    groups.get(g).push(r);
+  }
+  const orderedKeys = [
+    ...BUS_GROUP_ORDER.filter((g) => groups.has(g)),
+    ...[...groups.keys()].filter((g) => !BUS_GROUP_ORDER.includes(g)),
+  ];
+
+  for (const groupName of orderedKeys) {
+    const list = groups.get(groupName);
+    const section = document.createElement("div");
+    section.className = "line-group";
+    const title = document.createElement("div");
+    title.className = "line-group-title";
+    title.textContent = `${groupName} (${list.length})`;
+    section.appendChild(title);
+
+    for (const route of list) {
+      const rep = route.variants.find((v) => v.dir === "0") || route.variants[0];
+      const row = document.createElement("label");
+      row.className = "line-row";
+
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.checked = true;
+      checkbox.addEventListener("change", () => {
+        const layers = busLineLayers.get(route.id) || [];
+        for (const l of layers) {
+          if (checkbox.checked) l.addTo(leafletMap); else leafletMap.removeLayer(l);
+        }
+      });
+
+      const swatch = document.createElement("span");
+      swatch.className = "line-swatch";
+      swatch.style.background = route.color;
+
+      const label = document.createElement("span");
+      label.textContent = `${route.name} — ${rep.firstStop} → ${rep.lastStop}`;
+
+      row.appendChild(checkbox);
+      row.appendChild(swatch);
+      row.appendChild(label);
+      section.appendChild(row);
+    }
+    container.appendChild(section);
+  }
+}
+
+function setAllBusLines(show) {
+  document.querySelectorAll("#line-panel-groups input[type=checkbox]").forEach((cb) => {
+    cb.checked = show;
+    cb.dispatchEvent(new Event("change"));
+  });
+}
+
+function downloadGeoJson(routes, filenameBase) {
+  const features = [];
+  for (const route of routes) {
+    for (const variant of route.variants) {
+      features.push({
+        type: "Feature",
+        properties: {
+          id: route.id, name: route.name, longName: route.longName, color: route.color,
+          direction: variant.dir, firstStop: variant.firstStop, lastStop: variant.lastStop,
+        },
+        geometry: { type: "LineString", coordinates: variant.coords.map(([lat, lon]) => [lon, lat]) },
+      });
+    }
+  }
+  const geojson = { type: "FeatureCollection", features };
+  const blob = new Blob([JSON.stringify(geojson)], { type: "application/geo+json" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = `${filenameBase}.geojson`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+}
+
+/* ------------------------------------------------------------------
    Téléchargement
 ------------------------------------------------------------------- */
 
@@ -568,7 +790,11 @@ function renderHome() {
 
     const thumbWrap = document.createElement("div");
     thumbWrap.className = "map-card-thumb";
-    thumbWrap.appendChild(buildThumbSvg(network));
+    if (network.type === "geo") {
+      loadBusData().then(() => thumbWrap.appendChild(buildBusThumbSvg(network)));
+    } else {
+      thumbWrap.appendChild(buildThumbSvg(network));
+    }
 
     const scrim = document.createElement("div");
     scrim.className = "map-card-scrim";
@@ -594,6 +820,18 @@ function renderHome() {
 function renderDetail(key) {
   const network = NETWORKS[key];
   currentNetwork = network;
+
+  const isGeo = network.type === "geo";
+  document.getElementById("toolbar-schematic").classList.toggle("hidden", isGeo);
+  document.getElementById("toolbar-geo").classList.toggle("hidden", !isGeo);
+  document.getElementById("map-container").classList.toggle("hidden", isGeo);
+  document.getElementById("geo-view").classList.toggle("hidden", !isGeo);
+
+  if (isGeo) {
+    loadBusData().then((routes) => renderBusMap(network, routes));
+    return;
+  }
+
   currentSvg = buildNetworkSvg(network);
   const container = document.getElementById("map-container");
   container.innerHTML = "";
@@ -654,6 +892,13 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("settings-fab").addEventListener("click", toggleTheme);
   document.getElementById("btn-png").addEventListener("click", () => downloadPng(currentSvg, currentNetwork.filenameBase));
   document.getElementById("btn-svg").addEventListener("click", () => downloadSvg(currentSvg, currentNetwork.filenameBase));
+  document.getElementById("btn-geojson").addEventListener("click", () => downloadGeoJson(busData || [], currentNetwork.filenameBase));
+  document.getElementById("btn-toggle-panel").addEventListener("click", () => {
+    document.getElementById("line-panel").classList.toggle("hidden");
+    setTimeout(() => leafletMap && leafletMap.invalidateSize(), 60);
+  });
+  document.getElementById("btn-lines-all").addEventListener("click", () => setAllBusLines(true));
+  document.getElementById("btn-lines-none").addEventListener("click", () => setAllBusLines(false));
 
   window.addEventListener("hashchange", applyRoute);
   applyRoute();

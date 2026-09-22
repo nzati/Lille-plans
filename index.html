@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Lille Plans</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -17,19 +18,39 @@
   </main>
 
   <main id="view-detail" class="view hidden">
-    <div class="detail-toolbar">
+    <div id="toolbar-schematic" class="detail-toolbar">
       <button id="btn-png" class="btn btn-primary" type="button">Télécharger en PNG</button>
       <button id="btn-svg" class="btn btn-secondary" type="button">Télécharger en SVG</button>
     </div>
+    <div id="toolbar-geo" class="detail-toolbar hidden">
+      <button id="btn-geojson" class="btn btn-primary" type="button">Télécharger les données (GeoJSON)</button>
+      <button id="btn-toggle-panel" class="btn btn-secondary" type="button">Filtrer les lignes</button>
+    </div>
+
     <div id="map-container" class="map-container"></div>
+
+    <div id="geo-view" class="geo-view hidden">
+      <div id="leaflet-map" class="leaflet-map"></div>
+      <aside id="line-panel" class="line-panel">
+        <div class="line-panel-header">
+          <strong>Lignes de bus</strong>
+          <div class="line-panel-actions">
+            <button id="btn-lines-all" class="link-btn" type="button">Tout afficher</button>
+            <button id="btn-lines-none" class="link-btn" type="button">Tout masquer</button>
+          </div>
+        </div>
+        <div id="line-panel-groups" class="line-panel-groups"></div>
+      </aside>
+    </div>
   </main>
 
   <button id="settings-fab" class="fab" type="button" aria-label="Réglages (thème clair/sombre)">⚙</button>
 
   <footer class="foot-note">
-    Plans schématiques non contractuels, réalisés à partir des données du réseau Ilévia. Inspirés du style visuel des plans de transport parisiens.
+    Plans non contractuels. Métro et tramway : plans schématiques inspirés du style visuel des plans de transport parisiens. Bus : tracés géographiques réels issus des données ouvertes (GTFS) du réseau Ilévia.
   </footer>
 
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
