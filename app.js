@@ -1,5 +1,5 @@
 /* ------------------------------------------------------------------
-   Plans de Lille — rendu SVG façon plans RATP, pour plusieurs réseaux
+   Lille Plans — rendu SVG façon plans RATP, pour plusieurs réseaux
    Sources topologiques : Wikipédia
      - "Ligne 1 / Ligne 2 du métro de Lille" (métro, 60 stations)
      - "Tramway du Grand Boulevard" (tramway Mongy, lignes R/T, 36 stations)
@@ -8,7 +8,7 @@
 const SVG_NS = "http://www.w3.org/2000/svg";
 const STATION_R = 5;
 const INTERCHANGE_R = 9;
-const APP_TITLE = "Plans de Lille";
+const APP_TITLE = "Lille Plans";
 
 /* ------------------------------------------------------------------
    Réseau 1 — Métro (lignes 1 et 2)

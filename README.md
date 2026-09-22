@@ -1,4 +1,4 @@
-# Plans de Lille
+# Lille Plans
 
 Application web statique, façon appli mobile (écran d'accueil en liste de cartes + bouton réglages), qui génère des plans schématiques des réseaux de transport de Lille dans le même style visuel que les plans RATP : lignes colorées à angles de 45°/90°, stations en pastilles, correspondances en gros ronds, texte incliné. Chaque plan peut être téléchargé en PNG haute résolution ou en SVG vectoriel.
 
