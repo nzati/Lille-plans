@@ -1,8 +1,14 @@
-# Plan du métro de Lille
+# Plans de Lille
 
-Application web statique qui génère un plan schématique du métro de Lille (2 lignes, 60 stations), dans le même style visuel que le plan du métro parisien (lignes colorées à angles de 45°/90°, stations en pastilles, correspondances en gros ronds, texte incliné). Le plan peut être téléchargé en PNG haute résolution ou en SVG vectoriel.
+Application web statique, façon appli mobile (écran d'accueil en liste de cartes + bouton réglages), qui génère des plans schématiques des réseaux de transport de Lille dans le même style visuel que les plans RATP : lignes colorées à angles de 45°/90°, stations en pastilles, correspondances en gros ronds, texte incliné. Chaque plan peut être téléchargé en PNG haute résolution ou en SVG vectoriel.
 
-![Aperçu du plan du métro de Lille](screenshot.png)
+Deux réseaux sont disponibles :
+- **Métro** — lignes 1 et 2, 60 stations
+- **Tramway (Mongy)** — lignes R et T, 36 stations, tronc commun jusqu'à Croisé-Laroche
+
+| Plan du métro | Plan du tramway |
+| --- | --- |
+| ![Aperçu du plan du métro de Lille](screenshot.png) | ![Aperçu du plan du tramway de Lille](screenshot-tram.png) |
 
 ## Utilisation
 
@@ -12,14 +18,20 @@ Aucune dépendance ni build : ouvrir `index.html` dans un navigateur, ou lancer 
 npx serve .
 ```
 
-Deux boutons permettent de télécharger le plan généré :
+Sur l'écran d'accueil, chaque carte ouvre le plan correspondant avec deux boutons de téléchargement :
 - **Télécharger en PNG** — export raster haute résolution
 - **Télécharger en SVG** — export vectoriel éditable
 
+Le bouton ⚙ en bas à droite bascule entre thème clair et sombre.
+
 ## Données
 
-Topologie et noms de stations issus de Wikipédia (« Ligne 1 » et « Ligne 2 du métro de Lille »), réseau exploité par Ilévia.
+Topologie et noms de stations issus de Wikipédia :
+- « Ligne 1 » et « Ligne 2 du métro de Lille »
+- « Tramway du Grand Boulevard » (tramway Mongy)
+
+Réseau exploité par Ilévia.
 
 ## Avertissement
 
-Plan schématique non contractuel, réalisé à titre personnel.
+Plans schématiques non contractuels, réalisés à titre personnel.

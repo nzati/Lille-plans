@@ -5,6 +5,25 @@
   --paper: #ffffff;
   --grey: #6b6b6b;
   --border: #d9d9d9;
+  --bg: #f2f2ef;
+  --appbar-bg: #2b3a67;
+  --appbar-fg: #ffffff;
+  --card-bg: #e4e4e0;
+  --fab-bg: #1a1a1a;
+  --fab-fg: #ffffff;
+}
+
+:root[data-theme="dark"] {
+  --ink: #f0f0ee;
+  --paper: #1b1c20;
+  --grey: #a6a6a6;
+  --border: #3a3b40;
+  --bg: #101114;
+  --appbar-bg: #1a2140;
+  --appbar-fg: #ffffff;
+  --card-bg: #26272c;
+  --fab-bg: #f0f0ee;
+  --fab-fg: #1a1a1a;
 }
 
 * { box-sizing: border-box; }
@@ -12,52 +31,117 @@
 html, body {
   margin: 0;
   padding: 0;
-  height: 100%;
-  background: #f2f2ef;
+  min-height: 100%;
+  background: var(--bg);
   color: var(--ink);
   font-family: "Helvetica Neue", Arial, "Segoe UI", sans-serif;
 }
 
+.hidden { display: none !important; }
+
+/* ---------- App bar ---------- */
+
 .topbar {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 12px;
-  padding: 14px 20px;
-  background: var(--paper);
-  border-bottom: 3px solid var(--ink);
-}
-
-.topbar-title {
-  display: flex;
-  align-items: center;
   gap: 10px;
-}
-
-.logo-m {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  background: var(--ink);
-  color: var(--paper);
-  font-weight: 700;
-  font-size: 20px;
+  padding: 14px 18px;
+  background: var(--appbar-bg);
+  color: var(--appbar-fg);
 }
 
 .topbar h1 {
-  font-size: 20px;
+  font-size: 19px;
   margin: 0;
   font-weight: 700;
   letter-spacing: 0.2px;
 }
 
-.topbar-actions {
+.icon-btn {
+  border: none;
+  background: transparent;
+  color: var(--appbar-fg);
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 50%;
+}
+.icon-btn:hover { background: rgba(255,255,255,0.15); }
+
+/* ---------- Home : liste de cartes ---------- */
+
+.view { padding-bottom: 90px; }
+
+.card-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 16px;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.map-card {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 150px;
+  border: none;
+  border-radius: 10px;
+  overflow: hidden;
+  cursor: pointer;
+  padding: 0;
+  background: var(--card-bg);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.18);
+  transition: transform 0.12s ease;
+}
+.map-card:hover { transform: translateY(-1px); }
+.map-card:active { transform: translateY(0); }
+
+.map-card-thumb {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.map-card-scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.28) 45%, rgba(0,0,0,0) 75%);
+}
+
+.map-card-title {
+  position: absolute;
+  left: 16px;
+  bottom: 12px;
+  right: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  text-align: left;
+}
+
+.map-card-title-main {
+  color: #ffffff;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.map-card-title-sub {
+  color: rgba(255,255,255,0.85);
+  font-size: 12.5px;
+}
+
+/* ---------- Detail : plan + téléchargements ---------- */
+
+.detail-toolbar {
   display: flex;
   gap: 10px;
+  padding: 14px 18px;
+  background: var(--paper);
+  border-bottom: 1px solid var(--border);
 }
 
 .btn {
@@ -71,42 +155,45 @@ html, body {
   cursor: pointer;
   transition: background 0.15s, color 0.15s;
 }
-
 .btn:hover { background: var(--ink); color: var(--paper); }
 
-.btn-primary {
-  background: var(--ink);
-  color: var(--paper);
-}
-.btn-primary:hover { background: #333; }
+.btn-primary { background: var(--ink); color: var(--paper); }
+.btn-primary:hover { opacity: 0.85; background: var(--ink); }
 
-.map-wrap {
+.map-container {
   width: 100%;
   height: calc(100vh - 130px);
   overflow: auto;
   padding: 24px;
+  background: var(--bg);
 }
 
-.map-container {
-  background: var(--paper);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-  display: inline-block;
-}
+.map-container svg { display: block; background: var(--paper); }
 
-.map-container svg {
-  display: block;
+/* ---------- FAB réglages ---------- */
+
+.fab {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: none;
+  background: var(--fab-bg);
+  color: var(--fab-fg);
+  font-size: 22px;
+  cursor: pointer;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+  z-index: 20;
 }
+.fab:hover { opacity: 0.9; }
+
+/* ---------- Footer ---------- */
 
 .foot-note {
   text-align: center;
   font-size: 12px;
   color: var(--grey);
-  padding: 10px 20px 24px;
-}
-
-.station-label {
-  font-family: "Helvetica Neue", Arial, "Segoe UI", sans-serif;
-  fill: var(--ink);
+  padding: 10px 20px 90px;
 }

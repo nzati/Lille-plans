@@ -3,29 +3,31 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Plan du métro de Lille</title>
+<title>Plans de Lille</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <header class="topbar">
-    <div class="topbar-title">
-      <span class="logo-m">M</span>
-      <h1>Métro de Lille</h1>
-    </div>
-    <div class="topbar-actions">
-      <button id="btn-png" class="btn btn-primary">Télécharger en PNG</button>
-      <button id="btn-svg" class="btn btn-secondary">Télécharger en SVG</button>
-    </div>
+    <button id="back-btn" class="icon-btn hidden" type="button" aria-label="Retour">←</button>
+    <h1 id="app-title">Plans de Lille</h1>
   </header>
 
-  <main class="map-wrap">
-    <div id="map-container" class="map-container">
-      <!-- SVG map injected here by app.js -->
-    </div>
+  <main id="view-home" class="view">
+    <div id="card-list" class="card-list"></div>
   </main>
 
+  <main id="view-detail" class="view hidden">
+    <div class="detail-toolbar">
+      <button id="btn-png" class="btn btn-primary" type="button">Télécharger en PNG</button>
+      <button id="btn-svg" class="btn btn-secondary" type="button">Télécharger en SVG</button>
+    </div>
+    <div id="map-container" class="map-container"></div>
+  </main>
+
+  <button id="settings-fab" class="fab" type="button" aria-label="Réglages (thème clair/sombre)">⚙</button>
+
   <footer class="foot-note">
-    Plan schématique non contractuel, réalisé à partir des données du réseau Ilévia (2 lignes, 60 stations). Inspiré du style visuel du plan du métro parisien.
+    Plans schématiques non contractuels, réalisés à partir des données du réseau Ilévia. Inspirés du style visuel des plans de transport parisiens.
   </footer>
 
   <script src="app.js"></script>
