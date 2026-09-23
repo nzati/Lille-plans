@@ -245,7 +245,7 @@ const NETWORKS = {
     appTitle: "Accès à l'aéroport de Lille-Lesquin",
     filenameBase: "plan-acces-aeroport-lille",
     stations: {
-      "aeroport":  { name: "Aéroport Lille-Lesquin", x: 0, y: 0 },
+      "aeroport":  { name: "Aéroport Lille-Lesquin", x: 0, y: 0, airport: true },
       "qc-bus":    { name: "Quatre Cantons - Stade Pierre-Mauroy", x: 2, y: 0 },
       "flandres-bus": { name: "Gare Lille-Flandres", x: 4, y: 0, rail: true },
     },
@@ -433,6 +433,18 @@ function buildNetworkSvg(network) {
       });
       mt.textContent = "M";
       stationsGroup.appendChild(mt);
+    }
+    if (s.airport) {
+      const ap = { x: p.x - 30, y: p.y };
+      stationsGroup.appendChild(svgEl("circle", {
+        cx: ap.x, cy: ap.y, r: 13, fill: "#ffffff", stroke: "#1a1a1a", "stroke-width": 2,
+      }));
+      const plane = svgEl("path", {
+        d: "M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2.5 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z",
+        fill: "#1a1a1a",
+        transform: `translate(${ap.x},${ap.y}) scale(0.62) translate(-12,-12) rotate(90 12 12)`,
+      });
+      stationsGroup.appendChild(plane);
     }
 
     const dir = labelDirection(id, stations, lineOrders);
