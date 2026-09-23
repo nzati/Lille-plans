@@ -3,8 +3,8 @@
 Application web statique, façon appli mobile (écran d'accueil en liste de cartes + bouton réglages), qui présente les plans des réseaux de transport de Lille — sur le modèle d'une appli « Paris Line Maps » (Metro / RER / Bus / Night bus / Airport access), adaptée au réseau lillois.
 
 Cinq cartes sont disponibles :
-- **Métro** — lignes 1 et 2, 60 stations — plan schématique façon RATP (lignes à angles de 45°/90°, stations en pastilles, correspondances en gros ronds, texte incliné), téléchargeable en PNG ou SVG
-- **Tramway (Mongy)** — lignes R et T, 36 stations, tronc commun jusqu'à Croisé-Laroche — même style schématique, téléchargeable en PNG ou SVG
+- **Métro** — lignes 1 et 2, 60 stations — plan schématique façon RATP (lignes à angles de 45°/90°, stations en pastilles, correspondances en gros ronds, texte incliné), pincer-zoomer / glisser pour explorer
+- **Tramway (Mongy)** — lignes R et T, 36 stations, tronc commun jusqu'à Croisé-Laroche — même style schématique
 - **Bus** — 154 lignes, tracés réels sur fond de carte (OpenStreetMap via Leaflet), à partir des données ouvertes GTFS d'Ilévia, avec panneau de filtre par ligne et export des données en GeoJSON
 - **Bus de nuit** — ligne N1 (Lille Porte de Douai ↔ Villeneuve-d'Ascq 4 Cantons), même carte interactive filtrée sur cette seule ligne
 - **Accès aéroport** — plan schématique du trajet Aéroport de Lille-Lesquin → Bus 68 → Quatre Cantons - Stade Pierre-Mauroy → Métro Ligne 1 → Gare Lille-Flandres
@@ -26,8 +26,8 @@ npx serve www
 ```
 
 Sur l'écran d'accueil, chaque carte ouvre le plan correspondant :
-- **Métro / Tramway / Accès aéroport** : boutons **Télécharger en PNG** (export raster haute résolution) et **Télécharger en SVG** (export vectoriel éditable)
-- **Bus / Bus de nuit** : carte interactive (zoom/déplacement), panneau **Filtrer les lignes** groupé par famille (Lianes, Citadines, Corolle, Express, Scolaires…) et bouton **Télécharger les données (GeoJSON)**
+- **Métro / Tramway / Accès aéroport** : plan schématique, pincer pour zoomer et glisser pour se déplacer ([Panzoom](https://github.com/timmywil/panzoom))
+- **Bus / Bus de nuit** : carte interactive (zoom/déplacement natif Leaflet), panneau **Filtrer les lignes** groupé par famille (Lianes, Citadines, Corolle, Express, Scolaires…) et bouton **Télécharger les données (GeoJSON)**
 
 Le bouton ⚙ en bas à droite bascule entre thème clair et sombre.
 

@@ -760,65 +760,7 @@ function downloadGeoJson(routes, filenameBase) {
 }
 
 /* ------------------------------------------------------------------
-   Téléchargement
-------------------------------------------------------------------- */
-
-function serializeSvg(svg) {
-  const clone = svg.cloneNode(true);
-  clone.setAttribute("xmlns", SVG_NS);
-  return new XMLSerializer().serializeToString(clone);
-}
-
-function downloadSvg(svg, filenameBase) {
-  const source = serializeSvg(svg);
-  const blob = new Blob([source], { type: "image/svg+xml;charset=utf-8" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = `${filenameBase}.svg`;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  URL.revokeObjectURL(url);
-}
-
-function downloadPng(svg, filenameBase) {
-  const scale = 2.5;
-  const width = parseFloat(svg.getAttribute("width"));
-  const height = parseFloat(svg.getAttribute("height"));
-  const source = serializeSvg(svg);
-  const blob = new Blob([source], { type: "image/svg+xml;charset=utf-8" });
-  const url = URL.createObjectURL(blob);
-
-  const img = new Image();
-  img.onload = () => {
-    const canvas = document.createElement("canvas");
-    canvas.width = width * scale;
-    canvas.height = height * scale;
-    const ctx = canvas.getContext("2d");
-    ctx.fillStyle = "#ffffff";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.scale(scale, scale);
-    ctx.drawImage(img, 0, 0);
-    URL.revokeObjectURL(url);
-    canvas.toBlob((pngBlob) => {
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(pngBlob);
-      a.download = `${filenameBase}.png`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-    }, "image/png");
-  };
-  img.onerror = (e) => {
-    console.error("Erreur lors du rendu PNG", e);
-    alert("Le téléchargement en PNG a échoué. Essayez le téléchargement SVG.");
-  };
-  img.src = url;
-}
-
-/* ------------------------------------------------------------------
-   Écrans : accueil (liste de cartes) / détail (plan + téléchargements)
+   Écrans : accueil (liste de cartes) / détail (plan)
 ------------------------------------------------------------------- */
 
 let currentSvg = null;
@@ -838,7 +780,9 @@ function attachPanzoom(container, svg) {
   panzoomInstance = Panzoom(svg, {
     maxScale: 8,
     minScale: 1,
-    contain: "outside",
+    startScale: 1,
+    startX: 0,
+    startY: 0,
     canvas: true,
   });
   container.onwheel = panzoomInstance.zoomWithWheel;
@@ -897,7 +841,6 @@ function renderDetail(key) {
   currentNetwork = network;
 
   const isGeo = network.type === "geo";
-  document.getElementById("toolbar-schematic").classList.toggle("hidden", isGeo);
   document.getElementById("toolbar-geo").classList.toggle("hidden", !isGeo);
   document.getElementById("map-container").classList.toggle("hidden", isGeo);
   document.getElementById("geo-view").classList.toggle("hidden", !isGeo);
@@ -984,8 +927,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   document.getElementById("back-btn").addEventListener("click", () => navigate(""));
   document.getElementById("settings-fab").addEventListener("click", toggleTheme);
-  document.getElementById("btn-png").addEventListener("click", () => downloadPng(currentSvg, currentNetwork.filenameBase));
-  document.getElementById("btn-svg").addEventListener("click", () => downloadSvg(currentSvg, currentNetwork.filenameBase));
   document.getElementById("btn-geojson").addEventListener("click", () => downloadGeoJson(getNetworkBusRoutes(currentNetwork), currentNetwork.filenameBase));
   document.getElementById("btn-toggle-panel").addEventListener("click", () => {
     document.getElementById("line-panel").classList.toggle("hidden");
