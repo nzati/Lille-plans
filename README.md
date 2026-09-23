@@ -53,7 +53,8 @@ Le projet est empaqueté en appli Android via [Capacitor](https://capacitorjs.co
   ```bash
   npx capacitor-assets generate --android
   ```
-- **Publication sur le Play Store** : nécessite un compte développeur Google Play (25$, une fois) et un APK/AAB **signé** (contrairement à l'APK de debug généré par la CI). À faire une fois le compte créé.
+- **Build signé (AAB)** : `.github/workflows/release-build.yml` (déclenché manuellement) construit l'App Bundle signé à uploader sur le Play Store. Le keystore et ses secrets (`ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`) sont stockés en secrets GitHub Actions, jamais dans le repo. ⚠️ Le fichier `.keystore` original n'existe qu'en une seule copie hors ligne (remise à l'éditeur) — sa perte empêcherait de publier une future mise à jour sous la même identité d'appli.
+- **Politique de confidentialité** : publiée via GitHub Pages depuis `docs/privacy.html`, disponible à [nzati.github.io/Lille-plans/privacy.html](https://nzati.github.io/Lille-plans/privacy.html) (requis par le Play Store).
 
 ## Avertissement
 
