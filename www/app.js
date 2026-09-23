@@ -640,6 +640,36 @@ const busLineLayers = new Map(); // route.id -> [L.Polyline, ...]
 
 let busStopRenderer = null;
 
+const BUS_LABEL_MIN_ZOOM = 15; // en dessous, trop d'arrêts se chevauchent pour afficher les noms
+
+function updateStopLabelVisibility() {
+  // N'attache une étiquette (élément DOM) qu'aux arrêts actuellement visibles
+  // à l'écran, sinon des milliers d'étiquettes créées d'un coup bloquent le
+  // rendu (testé : plusieurs secondes de gel avec ~6800 arrêts au total).
+  if (!leafletMap) return;
+  const show = leafletMap.getZoom() >= BUS_LABEL_MIN_ZOOM;
+  const bounds = show ? leafletMap.getBounds() : null;
+  for (const layers of busLineLayers.values()) {
+    for (const l of layers) {
+      if (!(l instanceof L.LayerGroup) || !leafletMap.hasLayer(l)) continue;
+      l.eachLayer((marker) => {
+        const inView = show && marker._stopName && bounds.contains(marker.getLatLng());
+        if (inView) {
+          if (!marker.getTooltip()) {
+            marker.bindTooltip(marker._stopName, {
+              permanent: true, direction: "right", offset: [6, 0],
+              className: "bus-stop-label", opacity: 0.95,
+            });
+            marker.openTooltip();
+          }
+        } else if (marker.getTooltip()) {
+          marker.unbindTooltip();
+        }
+      });
+    }
+  }
+}
+
 function ensureLeafletMap() {
   if (leafletMap) return leafletMap;
   leafletMap = L.map("leaflet-map", { zoomControl: true }).setView([50.6292, 3.0573], 12);
@@ -648,6 +678,7 @@ function ensureLeafletMap() {
     maxZoom: 19,
   }).addTo(leafletMap);
   busStopRenderer = L.canvas({ padding: 0.5 }); // rendu performant pour des milliers d'arrêts
+  leafletMap.on("zoomend moveend", updateStopLabelVisibility);
   return leafletMap;
 }
 
@@ -679,6 +710,7 @@ function renderBusMap(network, routes) {
           fillColor: "#ffffff",
           fillOpacity: 1,
         });
+        marker._stopName = stopName;
         if (stopName) marker.bindPopup(`<strong>${escapeHtml(stopName)}</strong><br>Ligne ${escapeHtml(route.name)}`);
         stopsGroup.addLayer(marker);
       });
@@ -692,7 +724,7 @@ function renderBusMap(network, routes) {
   if (allLatLngs.length) map.fitBounds(allLatLngs, { padding: [20, 20] });
 
   buildLinePanel(routes);
-  setTimeout(() => map.invalidateSize(), 60);
+  setTimeout(() => { map.invalidateSize(); updateStopLabelVisibility(); }, 60);
 }
 
 function buildLinePanel(routes) {
@@ -731,6 +763,7 @@ function buildLinePanel(routes) {
         for (const l of layers) {
           if (checkbox.checked) l.addTo(leafletMap); else leafletMap.removeLayer(l);
         }
+        updateStopLabelVisibility();
       });
 
       const swatch = document.createElement("span");
