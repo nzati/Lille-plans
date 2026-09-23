@@ -909,11 +909,12 @@ function renderDetail(key) {
 }
 
 function showView(name) {
-  const isHome = name === "home";
-  document.getElementById("view-home").classList.toggle("hidden", !isHome);
-  document.getElementById("view-detail").classList.toggle("hidden", isHome);
-  document.getElementById("back-btn").classList.toggle("hidden", isHome);
-  document.getElementById("app-title").textContent = isHome ? APP_TITLE : currentNetwork.appTitle;
+  document.getElementById("view-home").classList.toggle("hidden", name !== "home");
+  document.getElementById("view-detail").classList.toggle("hidden", name !== "detail");
+  document.getElementById("view-settings").classList.toggle("hidden", name !== "settings");
+  document.getElementById("back-btn").classList.toggle("hidden", name === "home");
+  document.getElementById("app-title").textContent =
+    name === "home" ? APP_TITLE : name === "settings" ? "Réglages" : currentNetwork.appTitle;
   window.scrollTo(0, 0);
 }
 
@@ -923,7 +924,9 @@ function navigate(key) {
 
 function applyRoute() {
   const key = location.hash.replace("#", "");
-  if (key && NETWORKS[key]) {
+  if (key === "settings") {
+    showView("settings");
+  } else if (key && NETWORKS[key]) {
     renderDetail(key);
     showView("detail");
   } else {
@@ -947,6 +950,14 @@ function toggleTheme() {
   const next = current === "dark" ? "light" : "dark";
   document.documentElement.setAttribute("data-theme", next);
   try { localStorage.setItem("lille-plans-theme", next); } catch (e) { /* ignore */ }
+  updateThemeRowLabel();
+}
+
+function updateThemeRowLabel() {
+  const el = document.getElementById("settings-theme-value");
+  if (!el) return;
+  const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+  el.textContent = isDark ? "Sombre" : "Clair";
 }
 
 /* ------------------------------------------------------------------
@@ -965,10 +976,12 @@ window.addEventListener("error", (e) => {
 
 document.addEventListener("DOMContentLoaded", () => {
   initTheme();
+  updateThemeRowLabel();
   document.getElementById("app-title").textContent = APP_TITLE;
 
   document.getElementById("back-btn").addEventListener("click", () => navigate(""));
-  document.getElementById("settings-fab").addEventListener("click", toggleTheme);
+  document.getElementById("settings-fab").addEventListener("click", () => navigate("settings"));
+  document.getElementById("settings-theme-row").addEventListener("click", toggleTheme);
   document.getElementById("btn-lines-all").addEventListener("click", () => setAllBusLines(true));
   document.getElementById("btn-lines-none").addEventListener("click", () => setAllBusLines(false));
 

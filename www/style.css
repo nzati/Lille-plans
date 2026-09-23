@@ -248,6 +248,50 @@ html, body {
   }
 }
 
+/* ---------- Réglages ---------- */
+
+.settings-content {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 8px 20px 40px;
+}
+
+.settings-section {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: #2ea36f;
+  margin: 28px 0 4px;
+}
+
+.settings-row {
+  display: block;
+  width: 100%;
+  text-align: left;
+  border: none;
+  background: none;
+  border-bottom: 1px solid var(--border);
+  padding: 14px 0;
+  color: var(--ink);
+  text-decoration: none;
+  font-family: inherit;
+  cursor: default;
+}
+
+.settings-row-action { cursor: pointer; }
+.settings-row-action:hover { background: rgba(127,127,127,0.08); }
+
+.settings-row-title {
+  font-size: 16px;
+  margin-bottom: 2px;
+}
+
+.settings-row-value {
+  font-size: 14px;
+  color: var(--grey);
+}
+
 /* ---------- FAB réglages ---------- */
 
 .fab {

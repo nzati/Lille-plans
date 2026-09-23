@@ -29,7 +29,7 @@ Sur l'écran d'accueil, chaque carte ouvre le plan correspondant :
 - **Métro / Tramway / Accès aéroport** : plan schématique, pincer pour zoomer et glisser pour se déplacer ([Panzoom](https://github.com/timmywil/panzoom))
 - **Bus / Bus de nuit** : carte interactive (zoom/déplacement natif Leaflet) avec, en dessous, la liste des lignes groupée par famille (Lianes, Citadines, Corolle, Express, Scolaires…) et une case à cocher par ligne pour l'afficher/la masquer sur la carte
 
-Le bouton ⚙ en bas à droite bascule entre thème clair et sombre.
+Le bouton ⚙ en bas à droite ouvre un écran **Réglages** (langue, thème clair/sombre, version, contact, politique de confidentialité).
 
 ## Données
 
