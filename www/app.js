@@ -873,6 +873,7 @@ function showView(name) {
   document.getElementById("view-detail").classList.toggle("hidden", isHome);
   document.getElementById("back-btn").classList.toggle("hidden", isHome);
   document.getElementById("app-title").textContent = isHome ? APP_TITLE : currentNetwork.appTitle;
+  window.scrollTo(0, 0);
 }
 
 function navigate(key) {
