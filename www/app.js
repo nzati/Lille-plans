@@ -863,6 +863,15 @@ function renderHome() {
   }
 }
 
+function showError(container, err) {
+  console.error(err);
+  container.innerHTML = "";
+  const box = document.createElement("div");
+  box.style.cssText = "padding:20px;font-family:monospace;font-size:13px;white-space:pre-wrap;color:#b00020;";
+  box.textContent = "Erreur lors de l'affichage du plan :\n\n" + (err && err.stack ? err.stack : String(err));
+  container.appendChild(box);
+}
+
 function renderDetail(key) {
   const network = NETWORKS[key];
   currentNetwork = network;
@@ -874,16 +883,22 @@ function renderDetail(key) {
   document.getElementById("geo-view").classList.toggle("hidden", !isGeo);
 
   if (isGeo) {
-    loadBusData().then(() => renderBusMap(network, getNetworkBusRoutes(network)));
+    loadBusData()
+      .then(() => renderBusMap(network, getNetworkBusRoutes(network)))
+      .catch((err) => showError(document.getElementById("leaflet-map"), err));
     return;
   }
 
-  currentSvg = buildNetworkSvg(network);
   const container = document.getElementById("map-container");
-  container.innerHTML = "";
-  container.appendChild(currentSvg);
-  container.scrollTop = 0;
-  container.scrollLeft = 0;
+  try {
+    currentSvg = buildNetworkSvg(network);
+    container.innerHTML = "";
+    container.appendChild(currentSvg);
+    container.scrollTop = 0;
+    container.scrollLeft = 0;
+  } catch (err) {
+    showError(container, err);
+  }
 }
 
 function showView(name) {
@@ -929,6 +944,16 @@ function toggleTheme() {
 /* ------------------------------------------------------------------
    Init
 ------------------------------------------------------------------- */
+
+window.addEventListener("error", (e) => {
+  const view = document.getElementById("view-detail");
+  if (view && !view.classList.contains("hidden")) {
+    const target = document.getElementById("map-container").classList.contains("hidden")
+      ? document.getElementById("leaflet-map")
+      : document.getElementById("map-container");
+    if (target) showError(target, e.error || e.message);
+  }
+});
 
 document.addEventListener("DOMContentLoaded", () => {
   initTheme();
