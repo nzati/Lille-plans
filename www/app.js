@@ -823,6 +823,26 @@ function downloadPng(svg, filenameBase) {
 
 let currentSvg = null;
 let currentNetwork = null;
+let panzoomInstance = null;
+
+function destroyPanzoom() {
+  if (panzoomInstance) {
+    panzoomInstance.destroy();
+    panzoomInstance = null;
+  }
+}
+
+function attachPanzoom(container, svg) {
+  destroyPanzoom();
+  if (typeof Panzoom !== "function") return; // CDN not loaded (offline) : le plan reste visible, juste non zoomable
+  panzoomInstance = Panzoom(svg, {
+    maxScale: 8,
+    minScale: 1,
+    contain: "outside",
+    canvas: true,
+  });
+  container.onwheel = panzoomInstance.zoomWithWheel;
+}
 
 function renderHome() {
   const list = document.getElementById("card-list");
@@ -882,6 +902,8 @@ function renderDetail(key) {
   document.getElementById("map-container").classList.toggle("hidden", isGeo);
   document.getElementById("geo-view").classList.toggle("hidden", !isGeo);
 
+  destroyPanzoom();
+
   if (isGeo) {
     loadBusData()
       .then(() => renderBusMap(network, getNetworkBusRoutes(network)))
@@ -896,6 +918,7 @@ function renderDetail(key) {
     container.appendChild(currentSvg);
     container.scrollTop = 0;
     container.scrollLeft = 0;
+    attachPanzoom(container, currentSvg);
   } catch (err) {
     showError(container, err);
   }

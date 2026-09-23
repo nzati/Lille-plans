@@ -163,9 +163,10 @@ html, body {
 .map-container {
   width: 100%;
   height: calc(100vh - 130px);
-  overflow: auto;
+  overflow: hidden;
   padding: 24px;
   background: var(--bg);
+  touch-action: none;
 }
 
 .map-container svg { display: block; background: var(--paper); width: 100%; height: auto; }
