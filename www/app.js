@@ -638,6 +638,8 @@ function buildBusThumbSvg(network) {
 let leafletMap = null;
 const busLineLayers = new Map(); // route.id -> [L.Polyline, ...]
 
+let busStopRenderer = null;
+
 function ensureLeafletMap() {
   if (leafletMap) return leafletMap;
   leafletMap = L.map("leaflet-map", { zoomControl: true }).setView([50.6292, 3.0573], 12);
@@ -645,6 +647,7 @@ function ensureLeafletMap() {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     maxZoom: 19,
   }).addTo(leafletMap);
+  busStopRenderer = L.canvas({ padding: 0.5 }); // rendu performant pour des milliers d'arrêts
   return leafletMap;
 }
 
@@ -664,6 +667,24 @@ function renderBusMap(network, routes) {
       );
       poly.addTo(map);
       layers.push(poly);
+
+      const stopsGroup = L.layerGroup();
+      variant.coords.forEach((latlng, i) => {
+        const stopName = (variant.stopNames && variant.stopNames[i]) || "";
+        const marker = L.circleMarker(latlng, {
+          renderer: busStopRenderer,
+          radius: 4,
+          weight: 1.5,
+          color: route.color,
+          fillColor: "#ffffff",
+          fillOpacity: 1,
+        });
+        if (stopName) marker.bindPopup(`<strong>${escapeHtml(stopName)}</strong><br>Ligne ${escapeHtml(route.name)}`);
+        stopsGroup.addLayer(marker);
+      });
+      stopsGroup.addTo(map);
+      layers.push(stopsGroup);
+
       allLatLngs.push(...variant.coords);
     }
     busLineLayers.set(route.id, layers);

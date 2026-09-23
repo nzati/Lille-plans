@@ -176,6 +176,7 @@ async function main() {
       firstStop: stopNames[0],
       lastStop: stopNames[stopNames.length - 1],
       coords,
+      stopNames,
     });
   }
 
@@ -183,7 +184,10 @@ async function main() {
   const byRoute = new Map();
   for (const r of routes) {
     if (!byRoute.has(r.id)) byRoute.set(r.id, { id: r.id, name: r.name, longName: r.longName, color: r.color, variants: [] });
-    byRoute.get(r.id).variants.push({ dir: r.dir, coords: r.coords, firstStop: r.firstStop, lastStop: r.lastStop, stopCount: r.stopCount });
+    byRoute.get(r.id).variants.push({
+      dir: r.dir, coords: r.coords, stopNames: r.stopNames,
+      firstStop: r.firstStop, lastStop: r.lastStop, stopCount: r.stopCount,
+    });
   }
 
   const out = [...byRoute.values()].sort((a, b) => a.name.localeCompare(b.name, "fr", { numeric: true }));
