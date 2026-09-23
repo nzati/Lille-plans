@@ -21,9 +21,11 @@ android {
             def ksPath = System.getenv("ANDROID_KEYSTORE_PATH")
             if (ksPath != null) {
                 storeFile file(ksPath)
+                // Keystore PKCS12 : un seul mot de passe pour le coffre et la clé
+                // (keytool ignore silencieusement un -keypass distinct pour ce format).
                 storePassword System.getenv("ANDROID_KEYSTORE_PASSWORD")
                 keyAlias System.getenv("ANDROID_KEY_ALIAS")
-                keyPassword System.getenv("ANDROID_KEY_PASSWORD")
+                keyPassword System.getenv("ANDROID_KEYSTORE_PASSWORD")
             }
         }
     }
