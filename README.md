@@ -5,7 +5,7 @@ Application web statique, façon appli mobile (écran d'accueil en liste de cart
 Cinq cartes sont disponibles :
 - **Métro** — lignes 1 et 2, 60 stations — plan schématique façon RATP (lignes à angles de 45°/90°, stations en pastilles, correspondances en gros ronds, texte incliné), pincer-zoomer / glisser pour explorer
 - **Tramway (Mongy)** — lignes R et T, 36 stations, tronc commun jusqu'à Croisé-Laroche — même style schématique
-- **Bus** — 154 lignes, tracés réels sur fond de carte (OpenStreetMap via Leaflet), à partir des données ouvertes GTFS d'Ilévia, avec panneau de filtre par ligne et export des données en GeoJSON
+- **Bus** — 154 lignes, tracés réels sur fond de carte (OpenStreetMap via Leaflet), à partir des données ouvertes GTFS d'Ilévia, avec liste de lignes filtrable
 - **Bus de nuit** — ligne N1 (Lille Porte de Douai ↔ Villeneuve-d'Ascq 4 Cantons), même carte interactive filtrée sur cette seule ligne
 - **Accès aéroport** — plan schématique du trajet Aéroport de Lille-Lesquin → Bus 68 → Quatre Cantons - Stade Pierre-Mauroy → Métro Ligne 1 → Gare Lille-Flandres
 
@@ -27,7 +27,7 @@ npx serve www
 
 Sur l'écran d'accueil, chaque carte ouvre le plan correspondant :
 - **Métro / Tramway / Accès aéroport** : plan schématique, pincer pour zoomer et glisser pour se déplacer ([Panzoom](https://github.com/timmywil/panzoom))
-- **Bus / Bus de nuit** : carte interactive (zoom/déplacement natif Leaflet), panneau **Filtrer les lignes** groupé par famille (Lianes, Citadines, Corolle, Express, Scolaires…) et bouton **Télécharger les données (GeoJSON)**
+- **Bus / Bus de nuit** : carte interactive (zoom/déplacement natif Leaflet) avec, en dessous, la liste des lignes groupée par famille (Lianes, Citadines, Corolle, Express, Scolaires…) et une case à cocher par ligne pour l'afficher/la masquer sur la carte
 
 Le bouton ⚙ en bas à droite bascule entre thème clair et sombre.
 

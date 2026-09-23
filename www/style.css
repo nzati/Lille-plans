@@ -134,31 +134,7 @@ html, body {
   font-size: 12.5px;
 }
 
-/* ---------- Detail : plan + téléchargements ---------- */
-
-.detail-toolbar {
-  display: flex;
-  gap: 10px;
-  padding: 14px 18px;
-  background: var(--paper);
-  border-bottom: 1px solid var(--border);
-}
-
-.btn {
-  border: 2px solid var(--ink);
-  background: var(--paper);
-  color: var(--ink);
-  padding: 9px 16px;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.15s, color 0.15s;
-}
-.btn:hover { background: var(--ink); color: var(--paper); }
-
-.btn-primary { background: var(--ink); color: var(--paper); }
-.btn-primary:hover { opacity: 0.85; background: var(--ink); }
+/* ---------- Detail : plan ---------- */
 
 .map-container {
   width: 100%;
@@ -186,7 +162,7 @@ html, body {
 
 .geo-view {
   display: flex;
-  height: calc(100vh - 130px);
+  height: calc(100vh - 64px);
 }
 
 .leaflet-map {

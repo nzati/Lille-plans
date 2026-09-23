@@ -735,30 +735,6 @@ function setAllBusLines(show) {
   });
 }
 
-function downloadGeoJson(routes, filenameBase) {
-  const features = [];
-  for (const route of routes) {
-    for (const variant of route.variants) {
-      features.push({
-        type: "Feature",
-        properties: {
-          id: route.id, name: route.name, longName: route.longName, color: route.color,
-          direction: variant.dir, firstStop: variant.firstStop, lastStop: variant.lastStop,
-        },
-        geometry: { type: "LineString", coordinates: variant.coords.map(([lat, lon]) => [lon, lat]) },
-      });
-    }
-  }
-  const geojson = { type: "FeatureCollection", features };
-  const blob = new Blob([JSON.stringify(geojson)], { type: "application/geo+json" });
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = `${filenameBase}.geojson`;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-}
-
 /* ------------------------------------------------------------------
    Écrans : accueil (liste de cartes) / détail (plan)
 ------------------------------------------------------------------- */
@@ -841,7 +817,6 @@ function renderDetail(key) {
   currentNetwork = network;
 
   const isGeo = network.type === "geo";
-  document.getElementById("toolbar-geo").classList.toggle("hidden", !isGeo);
   document.getElementById("map-container").classList.toggle("hidden", isGeo);
   document.getElementById("geo-view").classList.toggle("hidden", !isGeo);
 
@@ -928,11 +903,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   document.getElementById("back-btn").addEventListener("click", () => navigate(""));
   document.getElementById("settings-fab").addEventListener("click", toggleTheme);
-  document.getElementById("btn-geojson").addEventListener("click", () => downloadGeoJson(getNetworkBusRoutes(currentNetwork), currentNetwork.filenameBase));
-  document.getElementById("btn-toggle-panel").addEventListener("click", () => {
-    document.getElementById("line-panel").classList.toggle("hidden");
-    setTimeout(() => leafletMap && leafletMap.invalidateSize(), 60);
-  });
   document.getElementById("btn-lines-all").addEventListener("click", () => setAllBusLines(true));
   document.getElementById("btn-lines-none").addEventListener("click", () => setAllBusLines(false));
 
