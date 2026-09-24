@@ -30,7 +30,15 @@ Les plans du métro, du tramway et de l'accès aéroport fonctionnent sans Inter
 
 Thème clair et sombre au choix.
 
-Application indépendante, non affiliée à Ilévia ni à la Métropole Européenne de Lille. Plans non contractuels, à titre informatif.
+ℹ️ SOURCES ET AVERTISSEMENT
+Lille Plans est une application indépendante et non officielle. Elle ne représente pas Ilévia, ni la Métropole Européenne de Lille, ni aucune autre entité gouvernementale ou service public, et n'est pas affiliée à ces organismes.
+
+Sources des informations affichées :
+• Lignes et arrêts de bus : données ouvertes (GTFS) publiées par Ilévia — https://media.ilevia.fr/opendata/gtfs.zip
+• Lignes et stations du métro et du tramway : Wikipédia — https://fr.wikipedia.org/wiki/Métro_de_Lille_Métropole
+• Fond de carte : © les contributeurs d'OpenStreetMap — https://www.openstreetmap.org/copyright
+
+Plans non contractuels, à titre informatif. Pour les horaires, perturbations et informations officielles, consultez le site d'Ilévia : https://www.ilevia.fr
 
 ## Éléments graphiques
 - Icône de l'appli (512×512) : `icon-512.png`
