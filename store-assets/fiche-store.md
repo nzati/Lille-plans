@@ -25,11 +25,14 @@ La ligne N1, entre Lille et Villeneuve-d'Ascq.
 ✈️ ACCÈS AÉROPORT
 Le trajet complet entre l'aéroport de Lille-Lesquin et le centre-ville (bus 68 + métro ligne 1).
 
-Fonctionne hors connexion pour les plans schématiques (métro, tramway, accès aéroport). Le plan des bus nécessite une connexion pour charger le fond de carte.
-
 Thème clair et sombre au choix.
 
 Application indépendante, non affiliée à Ilévia ni à la Métropole Européenne de Lille. Plans non contractuels, à titre informatif.
+
+## Éléments graphiques
+- Icône de l'appli (512×512) : `icon-512.png`
+- Image de présentation (1024×500) : `feature-graphic.png`
+- Captures d'écran téléphone (1080×1920), dans l'ordre : `screenshot-1-accueil.png`, `screenshot-2-metro.png`, `screenshot-3-tramway.png`, `screenshot-4-bus.png`
 
 ## Catégorie
 Cartes et navigation
