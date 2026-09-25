@@ -1,4 +1,4 @@
-package fr.nzati.lilleplans;
+package fr.njastudio.lilleplans;
 
 import com.getcapacitor.BridgeActivity;
 
